@@ -7,8 +7,20 @@ on:
 
 jobs:
   build:
+    - uses: actions/upload-artifact@v3
+    with:
+      name: my-app
+      path: dist/
+      retention-days: 1 deploy-job:
+    needs: [  build ]
     runs-on:  ubuntu-latest
     steps:
+      - uses: actions/download-artifacts@v2
+        with:
+          name: my-app
+          path: downloaded-content
+      - run:  |
+          ls downloaded-content
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Setup Node.js
@@ -32,8 +44,3 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json')}}
-      - uses: actions/upload-artifact@v3
-        with:
-          name: my-app
-          path: dist/
-        
